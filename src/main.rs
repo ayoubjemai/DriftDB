@@ -11,10 +11,10 @@ enum DatabaseInstanceType {
     Postgres,
 }
 fn main() {
-    let target_database_name = "primary-v4";
-    let source_database_name = "primary";
-    let source_connection_string = "mongodb://ws-staging:pBUQtArBlinM7klihghD3@deployment-staging-mongo1:20204,deployment-staging-mongo2:20205,deployment-staging-mongo3:20206/?authSource=admin";
-    let target_connection_string = "mongodb://ws-dev:pBUQtArBvtnM7akshghD3@deployment-mongo1:20201,deployment-mongo2:20202,deployment-mongo3:20203/?authSource=admin";
+    let target_database_name = "";
+    let source_database_name = "";
+    let source_connection_string = "";
+    let target_connection_string = "";
 
     let database_instance: DatabaseInstanceType = DatabaseInstanceType::Mongo;
 
