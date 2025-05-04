@@ -1,7 +1,6 @@
-use std::{fs, path::Path};
-
 use databases::connection::Database;
-use helpers::spinner;
+use dotenv::dotenv;
+use std::{env, fs};
 
 mod databases;
 mod helpers;
@@ -11,10 +10,15 @@ enum DatabaseInstanceType {
     Postgres,
 }
 fn main() {
-    let target_database_name = "";
-    let source_database_name = "";
-    let source_connection_string = "";
-    let target_connection_string = "";
+    dotenv().ok();
+    let env_target_database_name = getEnvVar("target_database_name");
+    let target_database_name = env_target_database_name.as_str();
+    let env_source_database_name = getEnvVar("source_database_name");
+    let source_database_name = env_source_database_name.as_str();
+    let env_source_connection_string = getEnvVar("source_connection_string");
+    let source_connection_string = env_source_connection_string.as_str();
+    let env_target_connection_string = getEnvVar("target_connection_string");
+    let target_connection_string = env_target_connection_string.as_str();
 
     let database_instance: DatabaseInstanceType = DatabaseInstanceType::Mongo;
 
@@ -56,5 +60,17 @@ fn initialize_database_connection<'a>(
         _ => {
             panic!("Database instance not implemented yet");
         }
+    }
+}
+
+fn getEnvVar(key: &str) -> String {
+    match env::var(key) {
+        Ok(value) => {
+            if value.is_empty() {
+                panic!("Environment variable {} is empty", key);
+            }
+            value
+        }
+        Err(_) => panic!("Environment variable {} not set", key),
     }
 }
