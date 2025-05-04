@@ -1,6 +1,6 @@
 use databases::connection::Database;
 use dotenv::dotenv;
-use std::{env, fs};
+use std::{env, fmt, fs};
 
 mod databases;
 mod helpers;
@@ -11,13 +11,13 @@ enum DatabaseInstanceType {
 }
 fn main() {
     dotenv().ok();
-    let env_target_database_name = getEnvVar("target_database_name");
+    let env_target_database_name = get_env_var("target_database_name");
     let target_database_name = env_target_database_name.as_str();
-    let env_source_database_name = getEnvVar("source_database_name");
+    let env_source_database_name = get_env_var("source_database_name");
     let source_database_name = env_source_database_name.as_str();
-    let env_source_connection_string = getEnvVar("source_connection_string");
+    let env_source_connection_string = get_env_var("source_connection_string");
     let source_connection_string = env_source_connection_string.as_str();
-    let env_target_connection_string = getEnvVar("target_connection_string");
+    let env_target_connection_string = get_env_var("target_connection_string");
     let target_connection_string = env_target_connection_string.as_str();
 
     let database_instance: DatabaseInstanceType = DatabaseInstanceType::Mongo;
@@ -30,7 +30,8 @@ fn main() {
         &database_instance,
     );
 
-    let dump_path = "tmp/mongo-dump";
+    let database_dump_file_path = format!("tmp/{:?}-dump", database_instance);
+    let dump_path = database_dump_file_path.as_str();
 
     fs::create_dir_all(dump_path).expect("Failed to create dump directory");
     let execluded_entities = vec!["notifications", "notificationsettings"];
@@ -63,7 +64,7 @@ fn initialize_database_connection<'a>(
     }
 }
 
-fn getEnvVar(key: &str) -> String {
+fn get_env_var(key: &str) -> String {
     match env::var(key) {
         Ok(value) => {
             if value.is_empty() {
@@ -72,5 +73,14 @@ fn getEnvVar(key: &str) -> String {
             value
         }
         Err(_) => panic!("Environment variable {} not set", key),
+    }
+}
+
+impl fmt::Debug for DatabaseInstanceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DatabaseInstanceType::Mongo => write!(f, "Mongo"),
+            DatabaseInstanceType::Postgres => write!(f, "Postgres"),
+        }
     }
 }
